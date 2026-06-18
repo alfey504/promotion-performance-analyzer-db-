@@ -1,10 +1,13 @@
+
 from database.database import SessionLocal
 from database.models import Product
 from database import product_db
 from database.create_table import init_tables
-from database.types import Conditions
+from database.utils import Conditions 
+
 
 def main():
+
     print("Hello from db-setup!")
     init_tables()
     # get_data()
@@ -13,9 +16,13 @@ def main():
 
 def get_product_caluse():
     condition = Conditions[int]("product_id", 2, "==")
-    products = product_db.get_products_by_condition(list({condition}))
-    for product in products:
-        print(product.product_name)
+    try:
+        products = product_db.get_products_by_condition(list({condition}))
+        for product in products:
+            print(product.product_name)
+    except Exception as e:
+        print(e)
+    
 
 def get_data():
     session = SessionLocal()

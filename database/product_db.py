@@ -2,37 +2,33 @@ from database.database import SessionLocal
 from sqlalchemy import select
 from database.models import Product
 from sqlalchemy import Sequence
-from database.types import Conditions
+from database.utils import Conditions
 
-def get_all_products() -> Sequence[Product] | None:
+def get_all_products() ->  list[Product]:
     session = SessionLocal()
     
     try: 
         products = session.scalars(select(Product)).all()
-        return products
+        return list[Product](products)
     except Exception:
-        return None
+        return Exception("There was issues fetching data from the database")
+    finally:
+        session.close()
+
+def get_products_by_condition(conditions: list[Conditions]) -> list[Product]:
+    
+    condition_list = []
+
+    session = SessionLocal()
+    try: 
+        for condition in conditions:  
+            con = condition.parse_condition(Product)     
+            condition_list.append(con)
+
+        products = session.scalars(select(Product).where(*condition_list)).all()
+        return products
+    except Exception as e:
+        raise e
     finally:
         session.close()
     
-def get_products_by_condition(conditions: list[Conditions]) -> Sequence[Product] | None :
-    session = SessionLocal()
-    condition_list = []
-
-    for condition in conditions:
-        column = getattr(Product, condition.key, None)
-        if column is None:
-            return None
-        
-        if not isinstance(condition.value, column.type.python_type):
-            return None
-        
-        operation = condition.getOperation()
-        if operation is None:
-            return None
-        
-        con = operation(column, condition.value)
-        condition_list.append(con)
-        
-    products = session.scalars(select(Product).where(*condition_list)).all()
-    return products
