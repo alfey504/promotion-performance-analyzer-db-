@@ -2,7 +2,6 @@ from operator import eq, ne, lt, gt, le, ge
 from typing import Literal, Union
 
 
-
 class Conditions[T]:
     key: str
     value: T
@@ -29,7 +28,7 @@ class Conditions[T]:
             raise Exception(f"field {self.key} does not exist in database")
         
         expected_type = column.type.python_type 
-        if not isinstance(self.value, column.type.python_type):
+        if not isinstance(self.value, expected_type):
             raise Exception(f"{self.key} expects type {expected_type.__name__}")
         
         operation = self.OPERATORS.get(self.opr)

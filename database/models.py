@@ -209,6 +209,16 @@ class Sale(Base):
         nullable=False
     )
 
+    regular_price: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    sale_date: Mapped[date] = mapped_column(
+        Date,
+        nullable=False,
+    )
+
     promotion_id: Mapped[int | None] = mapped_column(
         ForeignKey("promotions.promotion_id")
     )
